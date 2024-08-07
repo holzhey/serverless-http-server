@@ -1,0 +1,27 @@
+import * as cdk from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+import { join } from 'path';
+import { CfnOutput } from 'aws-cdk-lib';
+import { RustFunction } from 'cargo-lambda-cdk';
+import { LambdaRestApi } from 'aws-cdk-lib/aws-apigateway'
+import { FunctionUrlAuthType } from "aws-cdk-lib/aws-lambda";
+
+export class InfraStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+
+    const handler = new RustFunction(this, 'http-axum', {
+      binaryName: "bootstrap",
+      manifestPath: join(__dirname, '..', '..'),
+    });
+
+    if (process.env.ENABLE_LAMBDA_RUST_AXUM_FUNCTION_URL) {
+      const lambdaUrl = handler.addFunctionUrl({
+        authType: FunctionUrlAuthType.NONE,
+      });
+      new CfnOutput(this, 'Axum FunctionUrl ', { value: lambdaUrl.url });
+    }
+
+    new LambdaRestApi(this, 'AxumApi', { handler });
+  }
+}
