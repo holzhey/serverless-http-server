@@ -10,18 +10,15 @@ export class InfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const handler = new RustFunction(this, 'http-axum', {
-      binaryName: "bootstrap",
+    const handler = new RustFunction(this, 'Axum API', {
       manifestPath: join(__dirname, '..', '..'),
     });
 
-    if (process.env.ENABLE_LAMBDA_RUST_AXUM_FUNCTION_URL) {
-      const lambdaUrl = handler.addFunctionUrl({
-        authType: FunctionUrlAuthType.NONE,
-      });
-      new CfnOutput(this, 'Axum FunctionUrl ', { value: lambdaUrl.url });
-    }
-
-    new LambdaRestApi(this, 'AxumApi', { handler });
+   const lambdaUrl = handler.addFunctionUrl({
+      authType: FunctionUrlAuthType.NONE,
+    });
+    new CfnOutput(this, 'Axum FunctionUrl ', { value: lambdaUrl.url });
+    
+    new LambdaRestApi(this, 'axum', { handler });
   }
 }

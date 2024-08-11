@@ -3,10 +3,6 @@ name = "http-axum"
 version = "0.1.0"
 edition = "2021"
 
-[[bin]]
-name = "bootstrap"
-path = "src/main.rs"
-
 [dependencies]
 axum = "0.7.5"
 lambda_http = "0.13.0"
