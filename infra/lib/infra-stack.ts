@@ -10,6 +10,7 @@ export class InfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    // TODO: do not use RustFunction, switch to usual build and CDK constructs.
     const handler = new RustFunction(this, 'Axum API', {
       manifestPath: join(__dirname, '..', '..'),
     });
