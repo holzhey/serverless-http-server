@@ -9,6 +9,7 @@ use axum::{
 use lambda_http::{run, tracing, Error};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use tracing_panic::panic_hook;
 
 #[derive(Deserialize, Serialize)]
 struct Params {
@@ -67,5 +68,6 @@ async fn main() -> Result<(), Error> {
         .route("/parameters", get(get_parameters))
         .route("/health/", get(health_check));
 
+    std::panic::set_hook(Box::new(panic_hook));
     run(app).await
 }
