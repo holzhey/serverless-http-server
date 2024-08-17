@@ -50,8 +50,6 @@ async fn health_check() -> (StatusCode, String) {
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    // set_var("AWS_LAMBDA_HTTP_IGNORE_STAGE_IN_PATH", "true");
-
     tracing::init_default_subscriber();
 
     let app = Router::new()

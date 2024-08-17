@@ -20,6 +20,9 @@ export class ServiceStack extends cdk.Stack {
       handler: "not.required",
       logRetention: RetentionDays.FIVE_DAYS,
       timeout: cdk.Duration.seconds(5),
+      environment: {
+        AWS_LAMBDA_HTTP_IGNORE_STAGE_IN_PATH: "true",
+      },
     });
 
     const lambdaUrl = serviceHandler.addFunctionUrl({
@@ -31,8 +34,8 @@ export class ServiceStack extends cdk.Stack {
         restApiName: "ServiceApiGateway",
         deployOptions: {
           stageName: "current",          
-        }
-      }) ;
+        },
+    }) ;
 
       const proxyResource = api.root.addResource("{proxy+}");
     
