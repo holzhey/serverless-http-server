@@ -1,0 +1,13 @@
+build:
+	npm install
+
+deploy: build
+	cdk synth
+	cdk deploy
+
+deploy-local:
+	cdklocal bootstrap
+	cdklocal deploy
+
+destroy:
+	cdk destroy

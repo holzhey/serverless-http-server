@@ -1,0 +1,10 @@
+# build release
+build:
+        cargo lambda build --release --output-format binary
+
+# Deploy requires a release build
+deploy: build
+
+# test lambda
+test:
+        cargo test
