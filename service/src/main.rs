@@ -10,6 +10,7 @@ use lambda_http::{run, tracing, Error};
 use maud::Markup;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use tower_http::services::ServeFile;
 use tracing_panic::panic_hook;
 use view::page;
 
@@ -71,7 +72,8 @@ async fn main() -> Result<(), Error> {
         .route("/foo", get(get_foo).post(post_foo))
         .route("/foo/:name", post(post_foo_name))
         .route("/parameters", get(get_parameters))
-        .route("/health/", get(health_check));
+        .route("/health/", get(health_check))
+        .route_service("/favicon.ico", ServeFile::new("favicon.ico"));
 
     std::panic::set_hook(Box::new(panic_hook));
     run(app).await
