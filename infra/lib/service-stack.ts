@@ -18,6 +18,7 @@ export class ServiceStack extends cdk.Stack {
       runtime: lambda.Runtime.PROVIDED_AL2023,
       architecture: lambda.Architecture.X86_64,
       handler: "not.required",
+      memorySize: 128,
       logRetention: RetentionDays.FIVE_DAYS,
       timeout: cdk.Duration.seconds(5),
       environment: {
