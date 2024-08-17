@@ -39,6 +39,7 @@ async fn get_parameters(Query(params): Query<Params>) -> Json<Value> {
 }
 
 /// Example on how to return status codes and data from an Axum function
+#[tracing::instrument]
 async fn health_check() -> (StatusCode, String) {
     let health = true;
     match health {
