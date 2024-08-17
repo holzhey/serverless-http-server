@@ -7,6 +7,7 @@ use axum::{
     Router,
 };
 use lambda_http::{run, tracing, Error};
+use maud::{html, Markup};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use tracing_panic::panic_hook;
@@ -17,9 +18,11 @@ struct Params {
     second: Option<String>,
 }
 
-async fn root() -> Json<Value> {
+async fn root() -> Markup {
     tracing::info!("Getter");
-    Json(json!({ "msg": "I am GET /" }))
+    html! {
+        h1 { "Hello root level" }
+    }
 }
 
 async fn get_foo() -> Json<Value> {
