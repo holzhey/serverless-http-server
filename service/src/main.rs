@@ -7,10 +7,13 @@ use axum::{
     Router,
 };
 use lambda_http::{run, tracing, Error};
-use maud::{html, Markup};
+use maud::Markup;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use tracing_panic::panic_hook;
+use view::page;
+
+pub mod view;
 
 #[derive(Deserialize, Serialize)]
 struct Params {
@@ -20,9 +23,7 @@ struct Params {
 
 async fn root() -> Markup {
     tracing::info!("Getter");
-    html! {
-        h1 { "Hello root level" }
-    }
+    page(false)
 }
 
 async fn get_foo() -> Json<Value> {

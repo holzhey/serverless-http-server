@@ -23,6 +23,8 @@ export class ServiceStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(5),
       environment: {
         AWS_LAMBDA_HTTP_IGNORE_STAGE_IN_PATH: "true",
+        HTMX_URL: "https://unpkg.com/htmx.org@1.9.12",
+        HTMX_INTEGRITY: "sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2",
       },
     });
 
