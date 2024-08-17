@@ -17,6 +17,7 @@ struct Params {
 }
 
 async fn root() -> Json<Value> {
+    tracing::info!("Getter");
     Json(json!({ "msg": "I am GET /" }))
 }
 
@@ -50,7 +51,14 @@ async fn health_check() -> (StatusCode, String) {
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    tracing::init_default_subscriber();
+    tracing_subscriber::fmt()
+        .json()
+        .with_max_level(tracing::Level::INFO)
+        .with_current_span(false)
+        .with_ansi(false)
+        .without_time()
+        .with_target(false)
+        .init();
 
     let app = Router::new()
         .route("/", get(root))
