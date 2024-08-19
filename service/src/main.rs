@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use tower_http::services::ServeFile;
 use tracing_panic::panic_hook;
-use view::page;
+use view::{component, page};
 
 pub mod view;
 
@@ -23,8 +23,17 @@ struct Params {
 }
 
 async fn root() -> Markup {
-    tracing::info!("Getter");
+    tracing::info!("Root");
     page(false)
+}
+
+async fn root_clicked() -> Markup {
+    tracing::info!("Root Clicked");
+    page(true)
+}
+
+async fn clicked() -> Markup {
+    component()
 }
 
 async fn get_foo() -> Json<Value> {
@@ -69,6 +78,8 @@ async fn main() -> Result<(), Error> {
 
     let app = Router::new()
         .route("/", get(root))
+        .route("/clicked", get(root_clicked))
+        .route("/api/clicked", get(clicked))
         .route("/foo", get(get_foo).post(post_foo))
         .route("/foo/:name", post(post_foo_name))
         .route("/parameters", get(get_parameters))
