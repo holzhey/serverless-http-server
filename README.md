@@ -4,6 +4,8 @@
 
 This repository is a personal sandbox to play around serverless design using AWS, Rust, Axum, HTMX and Just.
 I play with it in my free time, it is not perfect and that is the goal: to play with ideas and improve them as possible.
+There are some features in my mind (see below), but i also want to refactor existing code to a well organized version.
+I also need to cover everything with tests, but for now i am mainly brainstorming.
 
 ### Why [Axum](https://github.com/tokio-rs/axum)?
 
@@ -37,7 +39,7 @@ It is simple, clean and provides what i need.
 ### Why [Helix](https://helix-editor.com/)?
 
 Well, i did not mentioned it but this is the editor i use personally, to develop in Rust, CDK, etc.
-It is an amazing editor writen in Rust, blazing fast (try to open a huge CSV file with Helix then with NeoVim and compare the performance) and simply to use but with powerful resources.
+It is an amazing editor writen in Rust, blazing fast (try to open a huge CSV file with Helix then with NeoVim and compare the performance) and simple to use but with powerful resources.
 
 ## How to use
 
