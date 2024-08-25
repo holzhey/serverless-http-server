@@ -9,7 +9,14 @@ import { RetentionDays } from "aws-cdk-lib/aws-logs";
 export class ServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-
+   
+    const api = new apigateway.RestApi(this, "ServiceGateway", {
+        restApiName: "ServiceApiGateway",
+        deployOptions: {
+          stageName: "current",
+        },
+    });
+    
     const serviceHandler = new lambda.Function(this, "ApiService", {
       functionName: "ApiServiceHandler",
       code: lambda.Code.fromAsset(
@@ -33,14 +40,7 @@ export class ServiceStack extends cdk.Stack {
     });
     new CfnOutput(this, 'Lambda FunctionUrl ', { value: lambdaUrl.url });
     
-    const api = new apigateway.RestApi(this, "ServiceGateway", {
-        restApiName: "ServiceApiGateway",
-        deployOptions: {
-          stageName: "current",          
-        },
-    }) ;
-
-      const proxyResource = api.root.addResource("{proxy+}");
+    const proxyResource = api.root.addResource("{proxy+}");
     
     api.root.addMethod(
       "ANY",

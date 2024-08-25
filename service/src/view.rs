@@ -1,12 +1,13 @@
 use std::env;
 
+use axum::response::IntoResponse;
 use maud::{html, Markup, DOCTYPE};
 
-pub fn page(clicked: bool) -> Markup {
+pub fn page(clicked: bool, stage: String) -> Markup {
     html! {
         (DOCTYPE)
         (header())
-        (body(clicked))
+        (body(clicked, stage))
     }
 }
 
@@ -22,22 +23,27 @@ fn header() -> Markup {
     }
 }
 
-fn body(clicked: bool) -> Markup {
-    let content = match clicked {
-        true => component,
-        false => button,
-    };
-    html! {
-        body {
-            h1 { "RESTful HTML" }
-            (content())
-        }
+fn body(clicked: bool, stage: String) -> Markup {
+    match clicked {
+        true => html! {
+            body {
+                h1 { "RESTful HTML" }
+                (component())
+            }
+        },
+        false => html! {
+            body {
+                h1 { "RESTful HTML" }
+                (button(stage))
+            }
+        },
     }
 }
 
-fn button() -> Markup {
+fn button(stage: String) -> Markup {
+    let url = format!("{}/api/clicked", stage.to_string());
     html! {
-        button id="component" hx-post="/api/clicked" hx-swap="outerHTML" hx-push-url="/clicked" { "Click me" }
+        button id="component" hx-post=(url) hx-swap="outerHTML" hx-push-url="/clicked" { "Click me" }
     }
 }
 

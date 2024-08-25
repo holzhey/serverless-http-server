@@ -7,8 +7,9 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use lambda_http::request::RequestContext::ApiGatewayV1;
 use lambda_http::tracing;
-use maud::Markup;
+use maud::{html, Markup};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
@@ -20,14 +21,28 @@ struct Params {
     second: Option<String>,
 }
 
-async fn root() -> Markup {
+async fn root(req: axum::extract::Request) -> Markup {
     tracing::info!("Root");
-    page(false)
+    let context = req
+        .extensions()
+        .get::<lambda_http::request::RequestContext>();
+    if let Some(ApiGatewayV1(ctx)) = context {
+        return page(false, format!("{:?}", ctx.stage.clone().unwrap()));
+    } else {
+        return html!("ERROE");
+    }
 }
 
-async fn root_clicked() -> Markup {
+async fn root_clicked(req: axum::extract::Request) -> Markup {
     tracing::info!("Root Clicked");
-    page(true)
+    let context = req
+        .extensions()
+        .get::<lambda_http::request::RequestContext>();
+    if let Some(ApiGatewayV1(ctx)) = context {
+        return page(true, format!("{:?}", ctx.stage.clone().unwrap()));
+    } else {
+        return html!("ERROE");
+    }
 }
 
 async fn clicked() -> Markup {
