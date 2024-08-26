@@ -1,6 +1,5 @@
 use std::env;
 
-use axum::response::IntoResponse;
 use maud::{html, Markup, DOCTYPE};
 
 pub fn page(clicked: bool, stage: String) -> Markup {
