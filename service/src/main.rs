@@ -1,3 +1,4 @@
+use std::net::SocketAddr;
 use std::panic::set_hook;
 
 use axum::middleware::from_fn;
@@ -36,11 +37,36 @@ async fn main() -> Result<(), Error> {
         .with_target(false)
         .init();
 
+    set_hook(Box::new(panic_hook));
+    run(app()).await
+}
+
+fn app() -> Router {
     let mut app = Router::new().route_service("/favicon.ico", ServeFile::new("favicon.ico"));
     for route in routes::get_all() {
         app = app.merge(route);
     }
-    app = app.route_layer(from_fn(mw_sample));
-    set_hook(Box::new(panic_hook));
-    run(app).await
+    app.route_layer(from_fn(mw_sample))
+}
+
+#[tokio::test]
+async fn test_root_path() -> httpc_test::Result<()> {
+    let addr = spawn_server().await;
+    let cli = httpc_test::new_client(format!("http://{addr}"))?;
+
+    let resp = cli.do_get("/").await?;
+
+    assert_eq!(resp.status(), 200);
+    assert_eq!(resp.text_body().unwrap(), "Not API GW");
+    Ok(())
+}
+
+async fn spawn_server() -> SocketAddr {
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:0").await.unwrap();
+    let addr = listener.local_addr().unwrap();
+
+    tokio::spawn(async move {
+        axum::serve(listener, app()).await.unwrap();
+    });
+    addr
 }

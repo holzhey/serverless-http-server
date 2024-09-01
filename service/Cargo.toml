@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 axum = "0.7.5"
+httpc-test = "0.1.10"
 lambda_http = "0.13.0"
 lambda_runtime = "0.13.0"
 maud = { version = "0.26.0", features = ["axum"] }

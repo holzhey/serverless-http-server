@@ -40,7 +40,7 @@ fn body(clicked: bool, stage: String) -> Markup {
 }
 
 fn button(stage: String) -> Markup {
-    let url = format!("{}/api/clicked", stage.to_string());
+    let url = format!("{}/api/clicked", stage);
     html! {
         button id="component" hx-post=(url) hx-swap="outerHTML" hx-push-url="/clicked" { "Click me" }
     }

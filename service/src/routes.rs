@@ -27,9 +27,9 @@ async fn root(req: axum::extract::Request) -> Markup {
         .extensions()
         .get::<lambda_http::request::RequestContext>();
     if let Some(ApiGatewayV1(ctx)) = context {
-        return page(false, format!("{:?}", ctx.stage.clone().unwrap()));
+        page(false, format!("{:?}", ctx.stage.clone().unwrap()))
     } else {
-        return html!("ERROE");
+        html!("Not API GW")
     }
 }
 
@@ -39,9 +39,9 @@ async fn root_clicked(req: axum::extract::Request) -> Markup {
         .extensions()
         .get::<lambda_http::request::RequestContext>();
     if let Some(ApiGatewayV1(ctx)) = context {
-        return page(true, format!("{:?}", ctx.stage.clone().unwrap()));
+        page(true, format!("{:?}", ctx.stage.clone().unwrap()))
     } else {
-        return html!("ERROE");
+        html!("Not API GW")
     }
 }
 
