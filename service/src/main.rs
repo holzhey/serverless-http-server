@@ -1,4 +1,3 @@
-use std::net::SocketAddr;
 use std::panic::set_hook;
 
 use axum::middleware::from_fn;
@@ -49,24 +48,33 @@ fn app() -> Router {
     app.route_layer(from_fn(mw_sample))
 }
 
-#[tokio::test]
-async fn test_root_path() -> httpc_test::Result<()> {
-    let addr = spawn_server().await;
-    let cli = httpc_test::new_client(format!("http://{addr}"))?;
+#[cfg(test)]
+mod tests {
+    use std::net::SocketAddr;
 
-    let resp = cli.do_get("/").await?;
+    use tokio::net::TcpListener;
 
-    assert_eq!(resp.status(), 200);
-    assert_eq!(resp.text_body().unwrap(), "Not API GW");
-    Ok(())
-}
+    use crate::app;
 
-async fn spawn_server() -> SocketAddr {
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:0").await.unwrap();
-    let addr = listener.local_addr().unwrap();
+    #[tokio::test]
+    async fn test_root_path() -> httpc_test::Result<()> {
+        let addr = spawn_server().await;
+        let cli = httpc_test::new_client(format!("http://{addr}"))?;
 
-    tokio::spawn(async move {
-        axum::serve(listener, app()).await.unwrap();
-    });
-    addr
+        let resp = cli.do_get("/").await?;
+
+        assert_eq!(resp.status(), 200);
+        assert_eq!(resp.text_body().unwrap(), "Not API GW");
+        Ok(())
+    }
+
+    async fn spawn_server() -> SocketAddr {
+        let listener = TcpListener::bind("0.0.0.0:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+
+        tokio::spawn(async move {
+            axum::serve(listener, app()).await.unwrap();
+        });
+        addr
+    }
 }
