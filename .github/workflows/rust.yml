@@ -12,6 +12,10 @@ env:
 jobs:
   build:
 
+    defaults:
+      run:
+        working-directory: service
+
     runs-on: ubuntu-latest
 
     steps:
