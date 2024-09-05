@@ -39,19 +39,7 @@ mod tests {
 
     use crate::app;
 
-    #[tokio::test]
-    async fn test_root_path() -> httpc_test::Result<()> {
-        let addr = spawn_server().await;
-        let cli = httpc_test::new_client(format!("http://{addr}"))?;
-
-        let resp = cli.do_get("/").await?;
-
-        assert_eq!(resp.status(), 200);
-        assert_eq!(resp.text_body().unwrap(), "Not API GW");
-        Ok(())
-    }
-
-    async fn spawn_server() -> SocketAddr {
+    pub async fn spawn_server() -> SocketAddr {
         let listener = TcpListener::bind("0.0.0.0:0").await.unwrap();
         let addr = listener.local_addr().unwrap();
 

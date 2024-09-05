@@ -92,3 +92,17 @@ pub fn get_all() -> Vec<Router> {
 fn route(path: &str, method_router: MethodRouter<()>) -> Router {
     Router::new().route(path, method_router)
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::tests::spawn_server;
+
+    #[tokio::test]
+    async fn root_path() {
+        let addr = spawn_server().await;
+        let resp = reqwest::get(format!("http://{addr}")).await.unwrap();
+
+        assert_eq!(resp.status(), 200);
+        assert_eq!(resp.text().await.unwrap(), "Not API GW");
+    }
+}
