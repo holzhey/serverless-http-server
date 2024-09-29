@@ -1,5 +1,6 @@
 use axum::extract::Query;
 use axum::http::StatusCode;
+use axum::response::IntoResponse;
 use axum::routing::MethodRouter;
 use axum::{
     extract::Path,
@@ -9,7 +10,7 @@ use axum::{
 };
 use lambda_http::request::RequestContext::ApiGatewayV1;
 use lambda_http::tracing;
-use maud::{html, Markup};
+use maud::Markup;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
@@ -21,27 +22,27 @@ struct Params {
     second: Option<String>,
 }
 
-async fn root(req: axum::extract::Request) -> Markup {
+async fn root(req: axum::extract::Request) -> Result<Markup, AppError> {
     tracing::info!("Root");
     let context = req
         .extensions()
         .get::<lambda_http::request::RequestContext>();
     if let Some(ApiGatewayV1(ctx)) = context {
-        page(false, format!("{:?}", ctx.stage.clone().unwrap()))
+        Ok(page(false, format!("{:?}", ctx.stage.clone().unwrap())))
     } else {
-        html!("Not API GW")
+        Err(AppError::NotApiGateway)
     }
 }
 
-async fn root_clicked(req: axum::extract::Request) -> Markup {
+async fn root_clicked(req: axum::extract::Request) -> Result<Markup, AppError> {
     tracing::info!("Root Clicked");
     let context = req
         .extensions()
         .get::<lambda_http::request::RequestContext>();
     if let Some(ApiGatewayV1(ctx)) = context {
-        page(true, format!("{:?}", ctx.stage.clone().unwrap()))
+        Ok(page(true, format!("{:?}", ctx.stage.clone().unwrap())))
     } else {
-        html!("Not API GW")
+        Err(AppError::NotApiGateway)
     }
 }
 
@@ -77,6 +78,16 @@ async fn health_check() -> (StatusCode, String) {
     }
 }
 
+enum AppError {
+    NotApiGateway,
+}
+
+impl IntoResponse for AppError {
+    fn into_response(self) -> axum::response::Response {
+        (StatusCode::INTERNAL_SERVER_ERROR, "Not an API GW").into_response()
+    }
+}
+
 pub fn get_all() -> Vec<Router> {
     vec![
         route("/", get(root)),
@@ -95,6 +106,8 @@ fn route(path: &str, method_router: MethodRouter<()>) -> Router {
 
 #[cfg(test)]
 mod tests {
+    use reqwest::StatusCode;
+
     use crate::tests::spawn_server;
 
     #[tokio::test]
@@ -102,7 +115,18 @@ mod tests {
         let addr = spawn_server().await;
         let resp = reqwest::get(format!("http://{addr}")).await.unwrap();
 
-        assert_eq!(resp.status(), 200);
-        assert_eq!(resp.text().await.unwrap(), "Not API GW");
+        assert_eq!(resp.status(), StatusCode::INTERNAL_SERVER_ERROR);
+        assert_eq!(resp.text().await.unwrap(), "Not an API GW");
+    }
+
+    #[tokio::test]
+    async fn root_clicked_path() {
+        let addr = spawn_server().await;
+        let resp = reqwest::get(format!("http://{addr}/clicked"))
+            .await
+            .unwrap();
+
+        assert_eq!(resp.status(), StatusCode::INTERNAL_SERVER_ERROR);
+        assert_eq!(resp.text().await.unwrap(), "Not an API GW");
     }
 }
