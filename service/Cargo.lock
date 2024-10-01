@@ -1221,6 +1221,7 @@ name = "service"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "cfg-if",
  "lambda_http",
  "maud",
  "reqwest",

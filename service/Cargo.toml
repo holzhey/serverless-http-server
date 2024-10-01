@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 axum = "0.7.5"
+cfg-if = "1.0.0"
 lambda_http = "0.13.0"
 maud = { version = "0.26.0", features = ["axum"] }
 serde = "1.0.204"
@@ -16,3 +17,8 @@ tracing-subscriber = { version = "0.3.18", features = ["json"] }
 
 [dev-dependencies]
 reqwest = "0.12.7"
+
+[features]
+default = ["lambda"]
+lambda = []
+local=[]
