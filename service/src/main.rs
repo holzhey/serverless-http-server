@@ -1,40 +1,33 @@
 use std::panic::set_hook;
 
 use axum::Router;
+use lambda_http::{run, tracing, Error};
 use tower_http::services::ServeFile;
 use tracing_panic::panic_hook;
 
 pub mod routes;
 pub mod view;
 
-cfg_if::cfg_if! {
-    if #[cfg(feature = "local")] {
-        #[tokio::main]
-        async fn main() {
-            println!("Running on http://localhost:3000");
-            set_hook(Box::new(panic_hook));
-            let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-            axum::serve(listener, app()).await.unwrap();
-        }
-    } else {
-        use lambda_http::{run, tracing, Error};
+#[tokio::main]
+async fn main() -> Result<(), Error> {
+    tracing_subscriber::fmt()
+        .json()
+        .with_max_level(tracing::Level::INFO)
+        .with_current_span(false)
+        .with_ansi(false)
+        .without_time()
+        .with_target(false)
+        .init();
 
-        #[tokio::main]
-        async fn main() -> Result<(), Error> {
-            tracing_subscriber::fmt()
-                .json()
-                .with_max_level(tracing::Level::INFO)
-                .with_current_span(false)
-                .with_ansi(false)
-                .without_time()
-                .with_target(false)
-                .init();
-
-            set_hook(Box::new(panic_hook));
-            run(app()).await
-        }
-
-    }
+    set_hook(Box::new(panic_hook));
+    #[cfg(feature = "local")]
+    let _ = axum::serve(
+        tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap(),
+        app(),
+    )
+    .await;
+    #[cfg(feature = "lambda")]
+    run(app()).await
 }
 
 fn app() -> Router {
