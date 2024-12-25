@@ -30,6 +30,7 @@ async fn root(req: axum::extract::Request) -> Result<Markup, AppError> {
     if let Some(ApiGatewayV1(ctx)) = context {
         Ok(page(false, format!("{:?}", ctx.stage.clone().unwrap())))
     } else {
+        // TODO: handle not api gw scenario
         Err(AppError::NotApiGateway)
     }
 }
@@ -42,6 +43,7 @@ async fn root_clicked(req: axum::extract::Request) -> Result<Markup, AppError> {
     if let Some(ApiGatewayV1(ctx)) = context {
         Ok(page(true, format!("{:?}", ctx.stage.clone().unwrap())))
     } else {
+        // TODO: handle not api gw scenario
         Err(AppError::NotApiGateway)
     }
 }
